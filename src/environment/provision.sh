@@ -21,7 +21,7 @@ echo "$USER_NAME:$USER_PSWD" | chpasswd
 usermod -a -G sudo $USER_NAME
 
 cp -r /home/vagrant/.ssh $USER_HOME
-cp /mnt/vagrant/home/.bashrc $USER_HOME
+find /mnt/vagrant/home -maxdepth 1 -mindepth 1 -execdir cp -r {} $USER_HOME \;
 
 chown -R $USER_NAME:$USER_NAME $USER_HOME/.ssh $USER_HOME/.bashrc
 
