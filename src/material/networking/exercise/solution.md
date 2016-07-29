@@ -83,7 +83,7 @@
    vm$ jobs
    [1]-  Running                 python3 -m http.server 1234 &
    [2]+  Running                 python3 -m http.server 5678 &
-   vm$ 
+   vm$
    ```
 
    This is because there are no restrictions on how many processes can access a
@@ -112,7 +112,7 @@
      File "/usr/lib/python3.4/socketserver.py", line 440, in server_bind
        self.socket.bind(self.server_address)
    OSError: [Errno 98] Address already in use
-   vm$ 
+   vm$
    ```
 
    The operating system is refusing to bind the new server to a port that is
@@ -210,7 +210,7 @@
    ```
    vm$ sudo python3 -m http.server 80
    Serving HTTP on 0.0.0.0 port 80 ...
-   ^Z  
+   ^Z
    [1]+  Stopped                 sudo python3 -m http.server 80
    vm$ bg 1
    [1]+ sudo python3 -m http.server 80 &

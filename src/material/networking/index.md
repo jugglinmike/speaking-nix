@@ -96,7 +96,7 @@ vm$ cat osi-focus.txt
 | 4 | Transport    | TCP, UDP  |
 | 3 | Network      | IP, ICMP  | <- Our focus
 +------------------------------+
-  2 | Data Link    | 
+  2 | Data Link    |
   1 | Physical     |
 vm$
 ```
@@ -240,22 +240,22 @@ bundled in many Unix-like environments can tell us this information.
 
 ```
 vm$ ifconfig
-eth0      Link encap:Ethernet  HWaddr 08:00:27:2d:60:65  
+eth0      Link encap:Ethernet  HWaddr 08:00:27:2d:60:65
           inet addr:10.0.2.3   Bcast:10.0.2.255  Mask:255.255.255.0
           inet6 addr: fe80::a00:27ff:fe2d:6065/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:25291 errors:0 dropped:0 overruns:0 frame:0
           TX packets:14148 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
+          collisions:0 txqueuelen:1000
           RX bytes:12757518 (12.7 MB)  TX bytes:1200573 (1.2 MB)
 
-lo        Link encap:Local Loopback  
+lo        Link encap:Local Loopback
           inet addr:127.0.0.1  Mask:255.0.0.0
           inet6 addr: ::1/128 Scope:Host
           UP LOOPBACK RUNNING  MTU:65536  Metric:1
           RX packets:61 errors:0 dropped:0 overruns:0 frame:0
           TX packets:61 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0 
+          collisions:0 txqueuelen:0
           RX bytes:5359 (5.3 KB)  TX bytes:5359 (5.3 KB)
 vm$
 ```
