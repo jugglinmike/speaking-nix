@@ -385,7 +385,7 @@ sending the server "job" to the background using `Ctrl` + `Z`. Be sure to use
 
 ```
 vm$ curl 127.0.0.1:8000
-127.0.0.1 - - [28/Jul/2016 21:09:05] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jul/1970 21:09:05] "GET / HTTP/1.1" 200 -
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
@@ -412,7 +412,7 @@ vm$ host localhost
 localhost has address 127.0.0.1
 localhost has IPv6 address ::1
 vm$ curl localhost:8000
-127.0.0.1 - - [28/Jul/2016 21:09:05] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jul/1970 21:09:05] "GET / HTTP/1.1" 200 -
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>

@@ -39,7 +39,7 @@
 
    ```
    vm$ curl localhost:1234
-   127.0.0.1 - - [29/Jul/2016 18:51:28] "GET / HTTP/1.1" 200 -
+   127.0.0.1 - - [29/Jul/1970 18:51:28] "GET / HTTP/1.1" 200 -
    <!DOCTYPE>
    <html>
      <head>
@@ -215,7 +215,7 @@
    vm$ bg 1
    [1]+ sudo python3 -m http.server 80 &
    vm$ curl speaker.local
-   127.0.0.1 - - [29/Jul/2016 19:22:39] "GET / HTTP/1.1" 200 -
+   127.0.0.1 - - [29/Jul/1970 19:22:39] "GET / HTTP/1.1" 200 -
    <!DOCTYPE>
    <html>
      <head>
