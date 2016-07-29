@@ -142,10 +142,14 @@ in this chapter.
 vm$ curl example.com
 <!doctype html>
 <html>
-<head>
-    <title>Example Domain</title>
-
+  <head>
     <meta charset="utf-8" />
+    <title>Example Domain</title>
+  </head>
+  <body>
+    Welcome to example.com!
+  </body>
+</html>
 ```
 
 ???
@@ -153,6 +157,38 @@ vm$ curl example.com
 By invoking `curl` with a URL, we are issuing an HTTP "GET" request. If the
 server responds, `curl` will print the content of the response body to standard
 output.
+
+---
+
+:continued:
+
+```
+vm$ $ curl -i www.example.com
+HTTP/1.0 200 OK
+Date: Thu, 28 Jul 1970 13:02:03 GMT
+Content-type: text/html
+Content-Length: 157
+Last-Modified: Thu, 28 Jul 1970 13:01:57 GMT
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Example Domain</title>
+  </head>
+  <body>
+    Welcome to example.com!
+  </body>
+</html>
+vm$
+```
+
+???
+
+If invoked with the `-i`/`--include` option, `curl` will include the HTTP
+headers of the response in its output. This option can be useful when
+debugging, where details like the response's status code are especially
+relevant.
 
 ---
 
@@ -205,7 +241,7 @@ bundled in many Unix-like environments can tell us this information.
 ```
 vm$ ifconfig
 eth0      Link encap:Ethernet  HWaddr 08:00:27:2d:60:65  
-          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
+          inet addr:10.0.2.3   Bcast:10.0.2.255  Mask:255.255.255.0
           inet6 addr: fe80::a00:27ff:fe2d:6065/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:25291 errors:0 dropped:0 overruns:0 frame:0
@@ -230,9 +266,9 @@ The output is a little verbose, though. This text describes two "interfaces,"
 one named "eth0" and another named "lo." Each interface has as associated "inet
 addr"--this is a network address.
 
-The address of the "eth0" interface (`10.0.2.15` in this case) is assigned by
-an authority on the network. It may change whenever the computer joins a
-network.
+The address of the "eth0" interface (`10.0.2.3` in this case) is assigned by an
+authority on the network (e.g. a router). It may change whenever the computer
+joins a network.
 
 In contrast, the address of the "lo" interface is defined by the system itself,
 and it generally does not change. The name "lo" is short for "loopback," and
@@ -318,6 +354,10 @@ define their own development environment using other tools like "Apache" or
 "nginx". Despite this, Python's `http.server` still demonstrates the core
 concepts well, so we'll use it in this chapter.
 
+Note that the server is running on "port 8000." We'll discuss ports later in
+this chapter. For now, we'll simply account for this by adding `:8000` to the
+end of our requests' addresses.
+
 ---
 
 :continued:
@@ -365,6 +405,31 @@ directory.
 
 ---
 
+# `localhost`
+
+```
+vm$ host localhost
+localhost has address 127.0.0.1
+localhost has IPv6 address ::1
+vm$ curl localhost:8000
+127.0.0.1 - - [28/Jul/2016 21:09:05] "GET / HTTP/1.1" 200 -
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Directory listing for /</title>
+</head>
+<body>
+<h1>Directory listing for /</h1>
+```
+
+???
+
+The host name `localhost` is usually synonymous with the address `127.0.0.1`.
+It's also a lot more intuitive, so you'll see it used in many web projects.
+
+---
+
 # Sharing on the network: loopback woes
 
 ```
@@ -406,16 +471,16 @@ vm$ cat osi-traversal-loopback-hidden.txt
                 .-- 10.0.2.3 ---.   .-- 10.0.2.5 ----.
                 | web server on |   |                |
                 |   127.0.0.1   |   | curl 127.0.0.1 |
-                |               |   |       V        |
-7. Application  |               |   |       |        |
-6. Presentation |               |   |       |        |
-5. Session      |               |   |       |        |
-4. Transport    |               |   |       |        |
-3. Network      |               |   |       |        |
-2. Data Link    |               |   |       |        |
-1. Physical     |       x       |   |       |        |
-                '-------^-------'   '-------V--------'
-                        |                   |
+                |               |   |      V         |
+7. Application  |               |   |      |         |
+6. Presentation |               |   |      |         |
+5. Session      |               |   |      |         |
+4. Transport    |               |   |      |         |
+3. Network      |               |   |      |         |
+2. Data Link    |               |   |      |         |
+1. Physical     |       x       |   |      |         |
+                '-------^-------'   '------V---------'
+                        |                  |
 ...===== network ==================================...
 vm$
 ```
@@ -435,16 +500,16 @@ vm$ cat osi-traversal-loopback-hidden.txt
                 .-- 10.0.2.3 ---.   .-- 10.0.2.5 ---.
                 | web server on |   |               |
                 |   127.0.0.1   |   | curl 10.0.2.3 |
-                |               |   |       V       |
-7. Application  |               |   |       |       |
-6. Presentation |               |   |       |       |
-5. Session      |               |   |       |       |
-4. Transport    |               |   |       |       |
-3. Network      |       x       |   |       |       |
-2. Data Link    |       |       |   |       |       |
-1. Physical     |       |       |   |       |       |
-                '-------^-------'   '-------V-------'
-                        |                   |
+                |               |   |      V        |
+7. Application  |               |   |      |        |
+6. Presentation |               |   |      |        |
+5. Session      |               |   |      |        |
+4. Transport    |               |   |      |        |
+3. Network      |       x       |   |      |        |
+2. Data Link    |       |       |   |      |        |
+1. Physical     |       |       |   |      |        |
+                '-------^-------'   '------V--------'
+                        |                  |
 ...===== network =================================...
 vm$
 ```
@@ -469,16 +534,16 @@ vm$ cat osi-traversal-loopback-hidden.txt
                 .-- 10.0.2.3 ---.   .-- 10.0.2.5 ---.
                 | web server on |   |               |
                 |   10.0.2.3    |   | curl 10.0.2.3 |
-                |       ^       |   |       V       |
-7. Application  |       |       |   |       |       |
-6. Presentation |       |       |   |       |       |
-5. Session      |       |       |   |       |       |
-4. Transport    |       |       |   |       |       |
-3. Network      |       |       |   |       |       |
-2. Data Link    |       |       |   |       |       |
-1. Physical     |       |       |   |       |       |
-                '-------^-------'   '-------V-------'
-                        |                   |
+                |       ^       |   |      V        |
+7. Application  |       |       |   |      |        |
+6. Presentation |       |       |   |      |        |
+5. Session      |       |       |   |      |        |
+4. Transport    |       |       |   |      |        |
+3. Network      |       |       |   |      |        |
+2. Data Link    |       |       |   |      |        |
+1. Physical     |       |       |   |      |        |
+                '-------^-------'   '------V--------'
+                        |                  |
 ...===== network =================================...
 vm$
 ```
@@ -497,94 +562,231 @@ conditions change.
 
 ```
 vm$ cat osi-traversal-loopback-hidden.txt
-                .-- 10.0.2.3 ---.   .-- 10.0.2.5 ---.
-                | web server on |   |               |
-                |    0.0.0.0    |   | curl 10.0.2.3 |
-                |       ^       |   |       V       |
-7. Application  |       |       |   |       |       |
-6. Presentation |       |       |   |       |       |
-5. Session      |       |       |   |       |       |
-4. Transport    |       |       |   |       |       |
-3. Network      |       |       |   |       |       |
-2. Data Link    |       |       |   |       |       |
-1. Physical     |       |       |   |       |       |
-                '-------^-------'   '-------V-------'
-                        |                   |
-...===== network =================================...
+                .---------- 10.0.2.3 ------------.   .-- 10.0.2.5 ---.
+                |                  web server on |   |               |
+                | curl 127.0.0.1     0.0.0.0     |   | curl 10.0.2.3 |
+                |      V               ^  ^      |   |      V        |
+7. Application  |      |               |  |      |   |      |        |
+6. Presentation |      |               |  |      |   |      |        |
+5. Session      |      |               |  |      |   |      |        |
+4. Transport    |      |               |  |      |   |      |        |
+3. Network      |      |               |  |      |   |      |        |
+2. Data Link    |      '---------------'  |      |   |      |        |
+1. Physical     |                         |      |   |      |        |
+                '-------------------------^------'   '------V--------'
+                                          |                 |
+...===== network ==================================================...
 vm$
 ```
 
 ???
 
-This is where another "special" address comes into play: `0.0.0.0`.
+This is where another "special" address comes into play: `0.0.0.0`. It is a
+sort of "placeholder" that in some contexts means, "no particular address."
+When a webserver is listening on that address, it will accept all requests it
+receives, regardless of IP. This means not only that teammates will have access
+to the server via the network-assigned IP address, but also that we can use
+`127.0.0.1` when working within the environment itself.
 
+Because of this, using `0.0.0.0` is usually the best option. However,
+development environments are inherently unstable and sometimes insecure, so
+exposing the server to the local network may not be advisable. When in doubt,
+speak to the lead developer on the project.
+
+---
+
+# `/etc/hosts`
+
+```
+vm$ cat /etc/hosts
+127.0.0.1	localhost
+vm$
+```
+
+???
+
+We'll make one final consideration for working with hosts in web development
+projects: the "hosts file." This file defines a list of host-name-to-IP-address
+pairs. The system will redirect requests to any host name listed to the
+corresponding IP address.
+
+---
+
+:continued:
+
+```
+vm$ host zombo.com
+zombo.com has address 69.16.230.117
+zombo.com mail is handled by 0 zombo.com.
+vm$ cat /etc/hosts
+127.0.0.1	localhost
+69.16.230.117	opengroup.org
+vm$ curl opengroup.org
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Zombo.com</title>
+  </head>
+  <body>
+```
+
+???
+
+While we could use this for general mischief, the functionality is limited to
+the local machine--it won't effect anyone else on the network.
+
+---
+
+:continued:
+
+```
+vm$ cat /etc/hosts
+127.0.0.1	localhost
+192.168.33.40	api.local
+vm$ curl api.local
+{}
+vm$
+```
+
+???
+
+Some web projects require the use of special "development mode" domains. So in
+practice, you may need to modify the `/etc/hosts` file depending on the needs
+of your project.
+
+Be aware that this file effects the entire system, so `sudo` is required to
+edit it.
 
 ---
 
 # Ports
 
+![Photograph of a shipping port](ports.jpg)
+
+["Port Chalmers,
+Dunedin"](https://www.flickr.com/photos/flyingkiwigirl/14529051237/) by
+[Shellie](https://www.flickr.com/photos/flyingkiwigirl/) is licensed under [CC
+BY-NC-ND 2.0](https://creativecommons.org/licenses/by-nc-nd/2.0/)
+
 ???
 
----
-
-```
-       -i, --include
-              (HTTP)  Include  the HTTP-header in the out‐
-              put. The HTTP-header  includes  things  like
-              server-name, date of the document, HTTP-ver‐
-              sion and more...
-```
+All of the requests to our local server have been to an address that ends in
+`:8000`. The colon character (`:`) designates the end of the host name and the
+beginning of the **port number**. Ports allow servers to designate different
+processes as "request handlers" for different requests.
 
 ---
 
-```
-vm$ $ curl example.com:8000 -i
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/2.7.6
-Date: Thu, 28 Jul 1970 13:02:03 GMT
-Content-type: text/html
-Content-Length: 157
-Last-Modified: Thu, 28 Jul 1970 13:01:57 GMT
+:continued:
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>example.com</title>
-  </head>
-  <body>
-    Welcome to example.com!
-  </body>
-</html>
+```
+vm$ cat osi-traversal-ports.txt
+                .-------- 10.0.2.3 -------.   .------- 10.0.2.5 ---------.
+                | file server  API server |   | GET / HTTP   $.post('/') |
+                | on port 80   on port 45 |   | 10.0.2.3:80  10.0.2.3:45 |
+                |      ^          ^       |   |      V            V      |
+7. Application  |      |          |       |   |      |            |      |
+6. Presentation |      |          |       |   |      |            |      |
+5. Session      |      |          |       |   |      |            |      |
+4. Transport    |      '-----+----'       |   |      '-----+------'      |
+3. Network      |            |            |   |            |             |
+2. Data Link    |            |            |   |            |             |
+1. Physical     |            |            |   |            |             |
+                '------------^------------'   '------------V-------------'
+                             |                             |
+...===== network ======================================================...
 vm$
 ```
 
+???
+
+In terms of the OSI model, ports are implemented in the "Transport" layer--on
+the web, this is TCP.
+
+
+For instance, a person browsing a web site might request a page from your
+server using port 80. A process like Python's `http.server` might be
+"listening" on this port, and if so, it would handle the request by responding
+with the page.
+
+Soon after that, some JavaScript on the page might issue an asynchronous
+request to your server, this time using port 45. Your server would receive the
+request, and at the Transport layer, it would be directed to the HTTP API
+process listening on port 45.
+
 ---
 
-In this course's virtual machine, `eth0` describes the system's one-and-only
-Ethernet-enabled device. Within that block, we can see that it has been
-assigned the IP address `10.0.2.15`.
+# Well-known ports
 
-- curl
-- IP addresses
-- 127.0.0.1 / localhost
-- Demo web server
-- `ifconfig`
-- `0.0.0.0`
+| Port Number | Function |
+|-------------|----------|
+|    21       | FTP      |
+|    22       | SSH      |
+|    25       | SMTP     |
+|    80       | HTTP     |
+|    194      | IRC      |
+|    443      | HTTPS    |
+
+???
+
+There are established conventions for running certain kinds of servers over
+certain ports. This is why we don't need to write `:80` to the end of URLs in
+web browsers or `curl`--because those applications operate using HTTP by
+default, port 80 is assumed.
+
+These numbers are simply convention, though. All port numbers are functionally
+equivalent, and any server is free to ignore convention and (for instance) run
+an IRC server on port 80.
 
 ---
 
-- OSI
-- Names
-  - `host`
-  - `ifconfig`
-  - 127.0.0.1
-  - localhost
-  - 0.0.0.0
-  - `/etc/hosts`
-- Ports
-  - TCP/UDP
-  - Well-known ports
-  - Privileged ports
-- Demo web server
-- Testing with `curl`
+# Dealing with privilege
+
+```
+vm$ python3 -m http.server --bind 127.0.0.1 5555
+Serving HTTP on 127.0.0.1 port 5555 ...
+^C
+Keyboard interrupt received, exiting.
+vm$ python3 -m http.server --bind 127.0.0.1 80
+PermissionError: [Errno 13] Permission denied
+vm$ sudo python3 -m http.server --bind 127.0.0.1 80
+Serving HTTP on 127.0.0.1 port 80 ...
+```
+
+???
+
+Despite their functional equivalence, Unix-like systems treat port numbers
+below 1024 as "privileged." This means we'll need administrative rights to
+start servers that listen on those ports. If your project requires a
+low-numbered port, be prepared to use `sudo`. For development environments,
+it's usually preferable to configure servers to listen on higher port numbers
+like `3000`, `5000`, or `8080`.
+
+You can experiment with these concerns by specifying a port number as a final
+option to Python's `http.server` module.
+
+---
+
+# In Review
+
+- Utilities
+  - `host` - finds the IP address for a given host on the network, e.g. `host
+    example.com`
+  - `curl` - makes a web request and returns the response
+  - `ifconfig` - learn about the system's network interfaces, including any IP
+    addresses assigned by the network
+  - `python3 -m http.server` - start a web server that offers all the files and
+     directories in the current directory
+- The IP address `127.0.0.1` is a "loopback" address: requests made to it will
+  not reach the network but instead be redirected back into the system; using
+  it reduces the variability between team members' development environments
+- `localhost` is an alias for `127.0.0.1`
+- Servers listening on the IP address `0.0.0.0` will respond to any request
+  they receive, making it ideal for exposing your system's development server
+  on the local network; be sure your server is safe for outside access before
+  using this address
+- The file at `/etc/hosts` is known as the "hosts file"; it defines system-wide
+  network redirection rules; editing it requires administrative privileges
+- A web server may listen on any port number; the default for HTTP is 80;
+  listening on port numbers below 1024 requires administrative privileges
