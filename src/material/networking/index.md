@@ -163,7 +163,7 @@ output.
 :continued:
 
 ```
-vm$ $ curl -i www.example.com
+vm$ curl -i www.example.com
 HTTP/1.0 200 OK
 Date: Thu, 28 Jul 1970 13:02:03 GMT
 Content-type: text/html
