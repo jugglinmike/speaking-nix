@@ -64,7 +64,6 @@ learn a new way of executing scripts before we can go any further.
 
 ---
 
-
 # "Sourcing" files with `.`
 
 ```
@@ -134,14 +133,26 @@ still limited, but even now, we can appreciate a problem with this approach.
 Running a configuration script like this every time we logged in the system
 would become tiresome very quickly.
 
-Thankfully, we can configure the system to automatically run our configuration
+Thankfully, we can instruct the system to automatically run our configuration
 scripts on our behalf. Accomplishing this is somewhat more complicated than it
 might seem at first, so we'll take some time to discuss the details before
 returning to more customization options.
 
+---
+
 # Startup scripts
 
-`.*rc`, `.*profile`, `.*login`
+- bash: `~/.bash_profile`, `~/,bash_login`, `~/.profile`, `~/.bashrc`
+- tcsh: `~/.tcshrc`, `~/.cshrc`, `~/.login`
+- zsh:  `$ZDOTDIR/.zshenv`, `$ZDOTDIR/.zprofile`, `$ZDOTDIR/.zshrc`,
+  `$ZDOTDIR/.zlogin`
+
+???
+
+To facilitate environment customation, every shell has a different set of
+hidden files that it will execute as it initializes. The file we should modify
+depends not only on the shell we are using, but also the "invocation mode" of
+the shell.
 
 ---
 
@@ -149,16 +160,14 @@ returning to more customization options.
 
 ```
 vm$ cat shell-classifications.txt
-----------------+----------------+------------------+
-                |                |                  |
-Interactive     |                |                  |
-                |                |                  |
-----------------+----------------+------------------+
-                |                |                  |
-Non-interactive |                |                  |
-                |                |                  |
-----------------+----------------+------------------+
-                |     Login      |     Non-login    |
+                |     Login     |    Non-login    |
+----------------+---------------+-----------------+
+Interactive     |               |                 |
+                |               |                 |
+----------------+---------------+-----------------+
+Non-interactive |               |                 |
+                |               |                 |
+----------------+---------------+-----------------+
 vm$
 ```
 
@@ -166,8 +175,8 @@ vm$
 
 Whether you are using `bash`, `sh`, `zsh`, or some other shell, all shells
 recognize two orthogonal "invocation modes": interactive versus
-non-interactive, and login versus non-login. These modes effect how the process
-behaves as it initializes.
+non-interactive, and login versus non-login. These modes effect how the shell
+behaves as it starts.
 
 ---
 
@@ -224,7 +233,32 @@ considerations.
 
 We separate "conventional meaning" from "requirements" because given the
 correct options, a shell can be run in any  "mode" regardless of the current
-context. It's not magic!
+context. While it may be a little technical, it's not magic!
+
+---
+
+# Shell invocation modes: conventional examples
+
+```
+vm$ cat shell-classifications-examples.txt
+                |     Login     |    Non-login    |
+----------------+---------------+-----------------+
+Interactive     | connecting    | opening a       |
+                | via SSH       | terminal window |
+----------------+---------------+-----------------+
+Non-interactive | very rare     | running a       |
+                | circumstances | shell script    |
+----------------+---------------+-----------------+
+vm$
+```
+
+???
+
+These distinctions exist to allow for fine-grained control over how the system
+prepares the environment in different contexts. However, the distinction
+between "login" and "non-login" is largely a vestage from the past, when
+terminals were slow and computing time was expensive. For our purposes, whether
+or not a shell is a "login shell" will not be particularly relevant.
 
 ---
 
