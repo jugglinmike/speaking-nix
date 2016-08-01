@@ -2,9 +2,176 @@
 title: Customization (TODO)
 ---
 
-This chapter has yet to be completed.
+???
+
+In this chapter, we'll look at various ways to customize the environment
+provided by a Unix-like system. These techniques can help maintain awareness of
+the system state, increase productivity, or simply make the terminal look
+nicer.
+
+---
+
+# Re-cap: 
+
+```
+vm$ sh ./greet.sh
+Hello.
+vm$ ./greet.sh
+./greet.sh: Permission denied
+vm$ chmod +x ./greet.sh
+vm$ ./greet.sh
+Hello.
+vm$
+```
+
+???
+
+In :chapter:scripting:, we saw how a shell script could be invoked from the
+command line. This pattern is much more convenient than using the script as
+an input to the shell utility, but it hides an important detail: in both cases,
+the script is executed as a standalone process.
+
+---
+
+# The hidden process
+
+```
+vm$ pwd
+/home/sally
+vm$ cat change-env.sh
+#!/bin/bash
+FOO=8
+cd /
+vm$ ./change-env.sh
+vm$ echo [ $FOO ]
+[ ]
+vm$ pwd
+/home/sally
+vm$
+```
+
+???
+
+If the script's purpose is to modify the *system* state (e.g. by modifying
+files, starting processes, etc.), then this distinction is not very important.
+However, if we want to use the script to modify the *environment*, then the
+process boundary is a problem.
+
+A script executed in this way might set environment variables or change
+directories, but this will not effect the "calling" context. The goal of this
+chapter is to automatically modify our shell's environment, so we'll need to
+learn a new way of executing scripts before we can go any further.
+
+---
 
 
+# "Sourcing" files with `.`
+
+```
+vm$ help .
+.: . filename [arguments]
+    Execute commands from a file in the current shell.
+
+    Read and execute commands from FILENAME in the current shell.
+    The entries in $PATH are used to find the directory
+    containing FILENAME. If any ARGUMENTS are supplied, they
+    become the positional parameters when FILENAME is executed.
+
+    Exit Status:
+    Returns the status of the last command executed in FILENAME;
+    fails if FILENAME cannot be read.
+vm$
+```
+
+???
+
+`.` (a.k.a. "dot") is a standard (though oddly-named) shell utility that does
+exactly this.
+
+---
+
+:continued:
+
+```
+vm$ pwd
+/home/sally
+vm$ cat change-env.sh
+#!/bin/bash
+FOO=8
+vm$ . change-env.sh
+vm$ echo [ $FOO ]
+[ 8 ]
+cd /
+vm$ pwd
+/
+vm$
+```
+
+???
+
+Using the "dot" utility is essentially saying, "interpret the commands in this
+file as though I entered them directly into this terminal window myself."
+
+---
+
+:continued:
+
+```
+vm$ cat change-prompt.sh 
+# Set the command prompt to a Microsoft Windows-style
+# value. It's just a bunch of characters, after all!
+PS1='C:/> '
+vm$ . change-prompt.sh 
+C:/> 
+```
+
+???
+
+We can use this right away to start writing scripts that customize our
+environment. (Recall the `$PS1` variable discussed in
+:chapter:command-invocation:.) Our current knowledge of customizations is
+still limited, but even now, we can appreciate a problem with this approach.
+Running a configuration script like this every time we logged in the system
+would become tiresome very quickly.
+
+Thankfully, we can configure the system to automatically run our configuration
+scripts on our behalf. Accomplishing this is somewhat more complicated than it
+might seem at first, so we'll take some time to discuss the details before
+returning to more customization options.
+
+# Startup scripts
+
+`.*rc`, `.*profile`, `.*login`
+
+---
+
+# Shell invocation modes
+
+```
+vm$ cat shell-classifications.txt
+----------------+----------------+------------------+
+                |                |                  |
+Interactive     |                |                  |
+                |                |                  |
+----------------+----------------+------------------+
+                |                |                  |
+Non-interactive |                |                  |
+                |                |                  |
+----------------+----------------+------------------+
+                |     Login      |     Non-login    |
+vm$
+```
+
+???
+
+Whether you are using `bash`, `sh`, `zsh`, or some other shell, all shells
+recognize two orthogonal "invocation modes": interactive versus
+non-interactive, and login versus non-login. These modes effect how the process
+behaves as it initializes.
+
+---
+
+:continued:
 
 
 > If you open a shell or terminal (or switch to one), and it asks you to log in
@@ -12,59 +179,52 @@ This chapter has yet to be completed.
 
 https://askubuntu.com/questions/155865/what-are-login-and-non-login-shells
 
+???
 
-
-- "Login" shell
-  - Log in directly through a text terminal (e.g. starting up a system built as
-    a server that has no graphical interface installed)
-  - Log in remotely through a text connection (e.g. connecting to a system
-    using `ssh`)
-- "Non-login" shell
-  -
-
-
-There is some confusion on the web about the meaning behind a shell's "mode."
-The best way to understand these distinctions is via two different considerations:
-
-- The semantic meaning of the mode
-- The effect the mode has on the shell's behavior
+This is a frequently-discussed topic on the web, but even among those supplying
+answers, there is some confusion about what this means.
 
 ---
 
-"Login" shells
+# Shell invocation mode considerations
 
-- **Technical conditions** - one of:
+- The **conventional meaning** of the mode
+- The **requirements** for a new shell process to qualify for this mode
+- The **effect** the mode has on the shell's behavior
+
+???
+
+The best way to understand these distinctions is via three different
+considerations.
+
+---
+
+# "Login" shells
+
+- **Conventional meaning** - this process is a user's connection to the system
+- **Requirements** - one of:
   - the value of the `$0` variable begins with a "dash" character (`-`)
   - the shell was invoked with the `-l` option
-- **Semantic meaning** - this process is a user's connection to the system
-- **Effect** - shell runs startup scripts designated for "login" sessions
+- **Effect** - the shell runs startup scripts designated for "login" sessions
 
-"Interactive" shells
+---
 
-- **Technical conditions** - one of:
-  - invoked without options are present and the standard input is connected
-    to a terminal
-  - invoked with the `-i` option but not the `-c` option
-- **Semantic meaning** - the standard input stream of this process is
+# "Interactive" shells
+
+- **Conventional meaning** - the standard input stream of this process is
   connected to a keyboard, and the user will enter commands over time
-- **Effect** - shell runs startup scripts designated for "interactive"
+- **Requirements** - one of:
+  - the shell was invoked without options and the standard input is connected
+    to a terminal
+  - the shell was invoked with the `-i` option but not the `-c` option
+- **Effect** - the shell runs startup scripts designated for "interactive"
   sessions
 
 ???
 
-From this perspective
-
-
----
-
-Interactive      |
-                 |
------------------+-------------+------------------|
-                 |             |
-Non-interactive  |             |
-                 |             |
-                 +-------------+-------------------
-                      Login    |        Non-login
+We separate "conventional meaning" from "requirements" because given the
+correct options, a shell can be run in any  "mode" regardless of the current
+context. It's not magic!
 
 ---
 
