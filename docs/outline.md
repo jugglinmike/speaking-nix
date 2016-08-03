@@ -98,7 +98,7 @@
     - Shell invocation modes (interactive vs. non-interactive; login vs.
       non-login)
     - `source`
-  - Aliases 
+  - Aliases
   - Shell variables (`$PATH`, `$PS1`, `$CDPATH`)
   - Maintaining dotfiles
 
