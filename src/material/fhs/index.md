@@ -1,5 +1,5 @@
 ---
-title: Filesystem Hierarchy Standard (TODO)
+title: Filesystem Hierarchy Standard
 ---
 
 ```
