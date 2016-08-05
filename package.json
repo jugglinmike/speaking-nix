@@ -43,5 +43,8 @@
     "remark-stringify": "^1.0.0",
     "unified": "^4.2.1",
     "unist-util-visit": "^1.0.0"
+  },
+  "devDependencies": {
+    "metalsmith-webpack": "^1.0.3"
   }
 }
