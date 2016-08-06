@@ -1,18 +1,28 @@
 'use strict';
-var path = require('path');
 
-var metalsmithWebpack = require('metalsmith-webpack');
+var webpack = require('webpack');
+var MemoryFS = require('memory-fs');
 
 module.exports = function(src, dest) {
-  return function(_, metalsmith, done) {
-
-    return metalsmithWebpack({
+  return function(files, metalsmith, done) {
+    var fs = new MemoryFS();
+    var compiler = webpack({
       context: metalsmith.path(),
       entry: './' + src,
       output: {
-        filename: dest,
-        path: metalsmith.path()
+        filename: './tmp.js',
+        path: '/',
       }
-    }).apply(null, arguments);
+    });
+    compiler.outputFileSystem = fs;
+    compiler.run(function(err) {
+      if (err) {
+        done(err);
+        return;
+      }
+
+      files[metalsmith.path(dest)] = { contents: fs.readFileSync('/tmp.js') };
+      done();
+    });
   };
 };

@@ -15,6 +15,7 @@ module.exports = function markdown(files, metalsmith, done) {
 
     parser()
       .use(require('./markdown-slides-bg-image'))
+      .use(require('./markdown-slides-render-code'), /terminal/)
       .use(require('./markdown-slides-continued'),
         {
           pattern: /^:continued:$/,

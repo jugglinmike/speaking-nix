@@ -1,7 +1,6 @@
 'use strict';
 
-var replSim = require('repl-sim');
-var whenInView = require('./when-in-view')();
+var ReplSim = require('repl-sim');
 
 var pres = document.getElementsByClassName('language-terminal');
 var options = {
@@ -18,6 +17,13 @@ var options = {
   }
 };
 
+function wait(ms) {
+  return new Promise(function(resolve) { setTimeout(resolve, ms); });
+}
+
 Array.prototype.slice.call(pres).forEach(function(pre) {
-  whenInView(pre, function(el) { replSim(el, options); });
+  var rs = new ReplSim(pre, options);
+  (function repeat() {
+    rs.play().then(wait.bind(null, 3000)).then(repeat);
+  }());
 });

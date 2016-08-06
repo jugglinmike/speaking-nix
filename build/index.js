@@ -53,6 +53,7 @@ Metalsmith(__dirname + '/..')
 
   .use(require('./plugins/toc'))
   .use(require('./plugins/add-root')(/(\/|^)index\.md$/))
+  .use(require('./plugins/webpack')('src/scripts/slides/app.js', 'out/slides/app.js'))
   .use(require('./plugins/replace')(
     /\.md$/,
     /:chapter:([^:]+):/g,
