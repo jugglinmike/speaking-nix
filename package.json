@@ -42,6 +42,7 @@
     "remark-html": "^5.0.0",
     "remark-parse": "^1.0.0",
     "remark-stringify": "^1.0.0",
+    "repl-sim": "^0.1.0",
     "unified": "^4.2.1",
     "unist-util-visit": "^1.0.0",
     "webpack": "^1.13.1"
