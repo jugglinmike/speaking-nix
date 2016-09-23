@@ -30,3 +30,11 @@ deploy: build $(OUTDIR_WEB)/.git
 .PHONY: clean
 clean:
 	rm -rf $(OUTDIR)
+
+$(OUTDIR)/speaking-nix.box:
+	cd src/environment && \
+		vagrant up && \
+		vagrant ssh -c '/mnt/vagrant/prep-for-packaging.sh' && \
+		vagrant package \
+			--vagrantfile Vagrantfile-packaged \
+			--output ../../$(OUTDIR)/speaking-nix.box

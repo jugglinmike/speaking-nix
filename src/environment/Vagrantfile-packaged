@@ -1,0 +1,9 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.ssh.username = "speaker"
+  config.ssh.password = "speaker"
+
+  config.vm.synced_folder ".", "/mnt/vagrant"
+end

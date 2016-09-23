@@ -6,9 +6,7 @@
 #
 # [1] https://www.vagrantup.com/docs/provisioning/shell.html
 
-USER_NAME=speaker
-USER_PSWD=speaker
-USER_HOME=/home/$USER_NAME
+. /mnt/vagrant/vars.sh
 
 echo "Updating package repository"
 apt-get update >/dev/null 2>&1
