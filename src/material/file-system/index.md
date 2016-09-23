@@ -76,6 +76,8 @@ vm$
 
 # `pwd`
 
+## Print the current (i.e. "working") directory
+
 ```terminal
 vm$ pwd
 /home/sally
@@ -99,6 +101,8 @@ In a GUI:
 ---
 
 # `ls`
+
+## List directory contents
 
 ```terminal
 vm$ pwd
@@ -142,6 +146,8 @@ of that directory.
 ---
 
 # `cd`
+
+## Change directories
 
 ```terminal
 vm$ cd my-amazing-subdirectory
