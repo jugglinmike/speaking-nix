@@ -6,8 +6,7 @@
 #
 # [1] https://www.vagrantup.com/docs/provisioning/shell.html
 
-USER_NAME=speaker
-USER_PSWD=speaker
+USER_NAME=vagrant
 USER_HOME=/home/$USER_NAME
 
 echo "Updating package repository"
@@ -15,14 +14,6 @@ apt-get update >/dev/null 2>&1
 
 echo "Installing utilities"
 apt-get install tree
-
-echo "Creating user: $USER_NAME"
-adduser $USER_NAME \
-  --gecos "First Last,RoomNumber,WorkPhone,HomePhone" \
-  --disabled-password
-echo "$USER_NAME:$USER_PSWD" | chpasswd
-usermod -a -G sudo $USER_NAME
-cp -r /home/vagrant/.ssh $USER_HOME
 
 echo "Copying files"
 rsync --recursive /mnt/vagrant/root/ /
@@ -32,5 +23,3 @@ cd $USER_HOME
 # The default `.bashrc` provided to new users by Ubuntu defines an abstraction
 # that hides details discussed in this course.
 rm $USER_HOME/.bashrc $USER_HOME/.profile
-
-chown -R $USER_NAME:$USER_NAME $USER_HOME /var/www/my-site
